@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, ChevronLeft } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
 import { useChatStore } from "../store/useChatStore";
 
@@ -9,10 +9,19 @@ const ChatHeader = () => {
   return (
     <div className="p-4 border-b border-indigo-500/10 bg-slate-900/40 backdrop-blur-sm">
       <div className="flex items-center justify-between">
-        <div 
-          className="flex items-center gap-3 cursor-pointer hover:bg-slate-800/50 p-1 -ml-1 rounded-xl transition-colors"
-          onClick={() => setShowUserProfileDetails(true)}
-        >
+        <div className="flex items-center gap-2">
+          {/* Back button for mobile */}
+          <button
+            onClick={() => setSelectedUser(null)}
+            className="lg:hidden p-2 -ml-2 hover:bg-slate-800 rounded-full transition-colors text-slate-400 hover:text-indigo-400"
+          >
+            <ChevronLeft className="size-6" />
+          </button>
+
+          <div 
+            className="flex items-center gap-3 cursor-pointer hover:bg-slate-800/50 p-1 rounded-xl transition-colors"
+            onClick={() => setShowUserProfileDetails(true)}
+          >
           <div className="size-10 rounded-full border-2 border-slate-800 overflow-hidden relative">
             <img src={selectedUser.profilePic || "/avatar.svg"} alt={selectedUser.username} className="w-full h-full object-cover" />
             {onlineUsers.includes(selectedUser._id) && (
@@ -27,8 +36,9 @@ const ChatHeader = () => {
             </p>
           </div>
         </div>
+      </div>
 
-        <button 
+      <button 
             onClick={() => setSelectedUser(null)}
             className="p-2 hover:bg-slate-800 rounded-full transition-colors group"
         >

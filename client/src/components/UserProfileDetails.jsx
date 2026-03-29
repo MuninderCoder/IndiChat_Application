@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 
 const UserProfileDetails = ({ user, onClose }) => {
   return (
-    <div className="w-80 border-l border-slate-800/50 bg-slate-900/50 flex flex-col h-full animate-in slide-in-from-right-10 duration-300">
+    <div className="w-full h-full border-l border-slate-800/50 bg-slate-900/90 backdrop-blur-xl flex flex-col animate-in slide-in-from-right-10 duration-300">
       <div className="p-4 border-b border-slate-800 flex items-center gap-3 bg-slate-900/80">
         <button
           onClick={onClose}

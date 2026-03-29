@@ -47,14 +47,14 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="h-full w-20 lg:w-[340px] border-r border-indigo-500/10 flex flex-col transition-all duration-300 relative bg-slate-900/10">
+    <aside className="h-full w-full lg:w-[340px] border-r border-indigo-500/10 flex flex-col transition-all duration-300 relative bg-slate-900/10">
       <div className="border-b border-indigo-500/10 w-full p-4 flex flex-col gap-4 bg-slate-900/20 backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <Users className="size-6 text-indigo-400" />
-          <span className="font-medium hidden lg:block text-slate-100">Contacts</span>
+          <span className="font-medium text-slate-100">Contacts</span>
         </div>
 
-        <div className="hidden lg:block space-y-3">
+        <div className="space-y-3">
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-slate-500" />
                 <input 
@@ -102,7 +102,7 @@ const Sidebar = () => {
                     `}
                 >
                     <div className="flex items-center gap-3 min-w-0 pr-2">
-                    <div className="relative shrink-0 mx-auto lg:mx-0">
+                    <div className="relative shrink-0">
                         <img
                         src={user.profilePic || "/avatar.svg"}
                         alt={user.username}
@@ -116,7 +116,7 @@ const Sidebar = () => {
                         )}
                     </div>
 
-                    <div className="hidden lg:block text-left min-w-0 flex-1">
+                    <div className="text-left min-w-0 flex-1">
                         <div className="font-medium truncate text-slate-200">{user.username}</div>
                         <div className="text-xs truncate max-w-[140px] mt-0.5">
                             {user.hasUnread ? (
@@ -137,7 +137,7 @@ const Sidebar = () => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="hidden lg:flex items-center opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                    <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                         {activeTab !== "available" && (
                             <button
                                 onClick={(e) => {
@@ -188,7 +188,7 @@ const Sidebar = () => {
         })}
 
         {filteredUsers.length === 0 && (
-          <div className="text-center justify-center flex flex-col items-center h-full text-slate-500 py-10 px-6 hidden lg:flex text-sm">
+          <div className="text-center justify-center flex flex-col items-center h-full text-slate-500 py-10 px-6 text-sm">
              {activeTab === "myChatBox" && "Your chat box is empty. Add contacts from Available."}
              {activeTab === "favourites" && "No favourites yet. Click the heart icon on any contact to add them."}
              {activeTab === "unread" && "No unread messages. You're all caught up!"}
@@ -202,7 +202,7 @@ const Sidebar = () => {
       {activeTab !== "available" && (
         <button
           onClick={() => setActiveTab("available")}
-          className="absolute bottom-6 right-6 p-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.3)] shadow-indigo-500/40 hover:shadow-indigo-500/60 transition-all duration-300 z-10 hidden lg:flex items-center justify-center cursor-pointer hover:scale-110 border border-indigo-400/20"
+          className="absolute bottom-6 right-6 p-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.3)] shadow-indigo-500/40 hover:shadow-indigo-500/60 transition-all duration-300 z-10 flex items-center justify-center cursor-pointer hover:scale-110 border border-indigo-400/20"
           title="Find more friends"
         >
           <Plus className="size-6 shadow-inner" />
