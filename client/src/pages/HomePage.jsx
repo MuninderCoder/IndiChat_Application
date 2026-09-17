@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 
 import Sidebar from "../components/Sidebar";
@@ -6,7 +7,12 @@ import ChatContainer from "../components/ChatContainer";
 import UserProfileDetails from "../components/UserProfileDetails";
 
 const HomePage = () => {
-  const { selectedUser, showUserProfileDetails, setShowUserProfileDetails } = useChatStore();
+  const { selectedUser, showUserProfileDetails, setShowUserProfileDetails, subscribeToMessages, unsubscribeFromMessages } = useChatStore();
+
+  useEffect(() => {
+    subscribeToMessages();
+    return () => unsubscribeFromMessages();
+  }, [subscribeToMessages, unsubscribeFromMessages]);
 
   return (
     <div className="h-screen bg-slate-950 pt-16 overflow-hidden">

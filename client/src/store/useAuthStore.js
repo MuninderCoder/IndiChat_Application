@@ -6,7 +6,7 @@ import { io } from "socket.io-client";
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || window.location.origin;
 
 const BASE_URL = import.meta.env.MODE === "development"
-  ? "http://localhost:5001"
+  ? ""
   : SOCKET_URL;
 
 export const useAuthStore = create((set, get) => ({
@@ -160,5 +160,6 @@ export const useAuthStore = create((set, get) => ({
 
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect();
+    set({ socket: null });
   },
 }));

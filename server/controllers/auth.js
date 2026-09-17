@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const generateToken = require('../utils/generateToken');
+const cloudinary = require('../utils/cloudinary');
 
 exports.signup = async (req, res) => {
   const { username, email, password } = req.body;
@@ -83,8 +84,23 @@ exports.updateProfile = async (req, res) => {
     const userId = req.user._id;
 
     const updates = {};
-    if (profilePic !== undefined) updates.profilePic = profilePic;
     if (bio !== undefined) updates.bio = bio;
+
+    if (profilePic !== undefined) {
+      if (profilePic === "") {
+        updates.profilePic = "";
+      } else {
+        try {
+          const uploadResponse = await cloudinary.uploader.upload(profilePic);
+          updates.profilePic = uploadResponse.secure_url;
+        } catch (cloudinaryError) {
+          console.error("Cloudinary upload failed:", cloudinaryError.message);
+          return res.status(400).json({ 
+            message: "Failed to upload image. Please check Cloudinary configuration." 
+          });
+        }
+      }
+    }
 
     if (Object.keys(updates).length === 0) {
       return res.status(400).json({ message: 'No fields provided to update' });

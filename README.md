@@ -1,65 +1,102 @@
 # IndiChat Application 💬
+> **IndiChat** is a robust, real-time messaging application built with the MERN stack (MongoDB, ExpressJS, React, Node.js). Designed for premium, low-latency, and end-to-end simulated encrypted communication.
 
-IndiChat is a robust, real-time messaging application built with the MERN stack (MongoDB, Express.js, React, Node.js). Designed for seamless communication, it features instantaneous message delivery, online presence tracking, and a sleek, user-friendly interface.
+---
 
 ## 🚀 Features
 
-*   **Real-time Communication**: Instant messaging powered by Socket.io for low-latency chat experiences.
-*   **User Authentication**: Secure JWT-based signup and login with hashed passwords using bcryptjs.
-*   **Message Status Tracking**: Real-time status updates (Sent, Delivered, Seen) so you always know when your messages are read.
-*   **Online Presence**: Live indicator of when your friends are online and active.
-*   **Typing Indicators**: Visual feedback when your contact is typing a message.
-*   **Profile Customization**: Users can update their profile information and avatars.
-*   **Responsive Design**: A fully responsive UI that looks great on mobile and desktop, built with Tailwind CSS.
-*   **Toaster Notifications**: Smooth and non-intrusive UI feedback using React Hot Toast.
-
-## 🛠️ Technology Stack
-
-### Frontend
-- **React 19**: Modern UI development.
-- **Vite**: Ultra-fast build tool for local development.
-- **Tailwind CSS**: Utility-first CSS for styling.
-- **Zustand**: State management for real-time authentication and chat.
-- **Socket.io Client**: For persistent real-time connections.
-- **React Router Dom**: Client-side navigation.
-
-### Backend
-- **Node.js & Express**: High-performance backend routing and server logic.
-- **MongoDB & Mongoose**: Flexible NoSQL database for messages and user data.
-- **Socket.io**: Real-time server-side engine for chat functionality.
-- **JWT (JSON Web Token)**: Secure authentication and session management.
-- **Cookie Parser**: Secure cookie handling for auth tokens.
-
-## 📦 Getting Started
-
-To run this project locally, follow these steps:
-
-### Prerequisites
-- Node.js installed
-- MongoDB URI (local or Atlas)
-
-### Local Setup
-
-1.  **Clone the repository**:
-    ```bash
-    git clone [your-repo-url]
-    cd IndiChat_Application
-    ```
-
-2.  **Server Setup**:
-    ```bash
-    cd server
-    npm install
-    cp .env.example .env # Add your MONGODB_URI and JWT_SECRET
-    npm start
-    ```
-
-3.  **Client Setup**:
-    ```bash
-    cd ../client
-    npm install
-    npm run dev
-    ```
+*   **Real-time Communication**: Low-latency instant messaging powered by Socket.IO.
+*   **Persistent Read Receipts**: Real-time read states (`Sent`, `Delivered`, `Seen`) synced and stored in MongoDB.
+*   **Live Online Presence**: Indicators displaying when users are active.
+*   **Typing Indicators**: Visual feedback when contacts are typing.
+*   **Simulated E2E Encryption**: AES-256 symmetric encryption of message payloads before database storage.
+*   **Dual Auth System**: Secure cookie-based and Bearer-header authentication.
+*   **Aesthetic Styling**: Harmony-based dark/light modes built with Tailwind CSS, custom scrollbars, and micro-animations.
 
 ---
-*Optimized build - Clean, lightweight, and ready for deployment.*
+
+## 📂 Project Structure Overview
+
+```
+IndiChat Application/
+├── client/                   ← Vite React Front-End
+│   ├── src/
+│   │   ├── components/       ← UI Components (Sidebar, ChatContainer, EmojiPicker)
+│   │   ├── store/            ← State management via Zustand (Auth, Chat, Theme)
+│   │   ├── lib/              ← Shared utilities (Axios client, AES Encryption)
+│   │   └── pages/            ← Top-level router views
+│   └── vite.config.js        ← Dev Proxy for CORS-free local integration
+│
+└── server/                   ← Node Express Back-End
+    ├── index.js              ← HTTP and Socket.IO initialization
+    ├── routes/               ← Express API Routers
+    ├── controllers/          ← Business logic controllers
+    └── models/               ← Mongoose DB schemas (User, Message)
+```
+
+---
+
+## 🛠️ Required Environment Variables
+
+### Server Config (`server/.env`)
+Create a `.env` file in the `server` directory:
+```ini
+PORT=5001
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+NODE_ENV=development
+```
+
+### Client Config (`client/.env`)
+Create a `.env` file in the `client` directory:
+```ini
+# Production URLs (only used when deployed)
+VITE_API_URL=https://your-production-backend.com
+VITE_SOCKET_URL=https://your-production-backend.com
+```
+*Note: In development mode, the frontend automatically routes all requests to port 5001 using Vite's built-in dev proxy.*
+
+---
+
+## 📦 Local Setup Instructions
+
+### 1. Prerequisite
+Ensure you have Node.js (version 18+) installed.
+
+### 2. Install Dependencies
+Run `npm install` at the workspace root to install dev dependencies (e.g., `concurrently`), and ensure client/server folders have their packages:
+```bash
+# From workspace root
+npm install
+```
+
+### 3. Run Dev Server
+Launch both the frontend and backend servers concurrently:
+```bash
+npm run dev
+```
+* **Frontend Access**: `http://localhost:5173/`
+* **Backend Access**: `http://localhost:5001/`
+
+---
+
+## 🔧 Database Setup & Troubleshooting
+
+### MongoDB Connection Timeout / ServerSelectionError
+If the server starts but logs a server selection error:
+```text
+❌ Could not connect to MongoDB. Check your whitelists.
+Error Type: MongooseServerSelectionError
+```
+**Root Cause**: MongoDB Atlas is blocking connection requests because your current network IP is not listed on your cluster's IP Access List.
+
+**Solution**:
+1. Log in to your **MongoDB Atlas Console**.
+2. Go to **Security** → **Network Access**.
+3. Click **Add IP Address** and add your current IP address (or choose **Allow Access from Anywhere** `0.0.0.0/0` for development).
+
+---
+
+## ⚠️ Known Limitations
+* **Base64 Image Storage**: Image attachments are uploaded and stored directly as base64 text strings in MongoDB documents. In a production environment, this should be offloaded to a dedicated CDN (like Cloudinary or AWS S3) to preserve database performance.
+* **Symmetric Encryption Key**: Encryption keys are shared symmetrically. For enterprise-grade security, key exchange algorithms (such as Diffie-Hellman) should be used.

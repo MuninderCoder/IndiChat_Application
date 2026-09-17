@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const Message = require('../models/Message');
+const cloudinary = require('../utils/cloudinary');
 
 exports.getUsersForSidebar = async (req, res) => {
   try {
@@ -23,9 +24,9 @@ exports.getUsersForSidebar = async (req, res) => {
         return {
             ...u,
             hasUnread: !!unreadMsg,
-            unreadText: unreadMsg ? (unreadMsg.text || '📷 Photo') : null,
+            unreadText: unreadMsg ? (unreadMsg.isDeleted ? '🚫 Message deleted' : (unreadMsg.text || '📷 Photo')) : null,
             hasHistory: !!anyMsg,
-            lastMessageText: anyMsg ? (anyMsg.text || '📷 Photo') : null
+            lastMessageText: anyMsg ? (anyMsg.isDeleted ? '🚫 Message deleted' : (anyMsg.text || '📷 Photo')) : null
         };
     }));
 
@@ -40,6 +41,12 @@ exports.getMessages = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
     const myId = req.user._id;
+
+    // Mark incoming messages as seen
+    await Message.updateMany(
+      { senderId: userToChatId, receiverId: myId, status: { $ne: 'seen' } },
+      { $set: { status: 'seen' } }
+    );
 
     const messages = await Message.find({
       $or: [
@@ -61,11 +68,24 @@ exports.sendMessage = async (req, res) => {
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
+    let imageUrl = "";
+    if (image) {
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(image);
+        imageUrl = uploadResponse.secure_url;
+      } catch (cloudinaryError) {
+        console.error("Cloudinary upload failed in sendMessage:", cloudinaryError.message);
+        return res.status(400).json({
+          message: "Failed to upload image. Please check Cloudinary configuration."
+        });
+      }
+    }
+
     const newMessage = new Message({
       senderId,
       receiverId,
       text,
-      image,
+      image: imageUrl,
     });
 
     await newMessage.save();

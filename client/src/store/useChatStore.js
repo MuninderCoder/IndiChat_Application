@@ -67,7 +67,9 @@ export const useChatStore = create((set, get) => ({
 
       // Emit via socket for real-time
       const socket = useAuthStore.getState().socket;
-      socket.emit("sendMessage", { ...res.data, tempId });
+      if (socket) {
+        socket.emit("sendMessage", { ...res.data, tempId });
+      }
 
     } catch (error) {
       toast.error(error.response.data.message);
@@ -75,20 +77,23 @@ export const useChatStore = create((set, get) => ({
       set({ messages: get().messages.filter(m => m._id !== tempId) });
     }
   },
-
   subscribeToMessages: () => {
-    const { selectedUser } = get();
-    if (!selectedUser) return;
-
     const socket = useAuthStore.getState().socket;
+    if (!socket) return;
+
+    // Clean up any existing listeners first to prevent duplicates
+    socket.off("newMessage");
+    socket.off("messageStatusUpdate");
+    socket.off("displayTyping");
 
     socket.on("newMessage", (newMessage) => {
+      const { selectedUser, messages, users } = get();
       const isMessageFromSelectedUser = newMessage.senderId === selectedUser?._id;
       
       if (!isMessageFromSelectedUser) {
           // Update the user's unread status in the sidebar instantly
           set({
-             users: get().users.map(u => 
+             users: users.map(u => 
                  u._id === newMessage.senderId 
                  ? { ...u, hasUnread: true, hasHistory: true, unreadText: newMessage.text }
                  : u
@@ -98,7 +103,7 @@ export const useChatStore = create((set, get) => ({
       }
 
       set({
-        messages: [...get().messages, newMessage],
+        messages: [...messages, newMessage],
       });
 
       // Mark as seen
@@ -117,24 +122,28 @@ export const useChatStore = create((set, get) => ({
 
     // Typing listener
     socket.on("displayTyping", ({ senderId, isTyping }) => {
-        if (senderId === selectedUser._id) {
+        const { selectedUser } = get();
+        if (selectedUser && senderId === selectedUser._id) {
             set({ isTyping });
         }
     });
   },
-
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;
-    socket.off("newMessage");
-    socket.off("messageStatusUpdate");
-    socket.off("displayTyping");
+    if (socket) {
+      socket.off("newMessage");
+      socket.off("messageStatusUpdate");
+      socket.off("displayTyping");
+    }
   },
 
   sendTypingStatus: (isTyping) => {
     const { selectedUser } = get();
     if (!selectedUser) return;
     const socket = useAuthStore.getState().socket;
-    socket.emit("typing", { receiverId: selectedUser._id, isTyping });
+    if (socket) {
+      socket.emit("typing", { receiverId: selectedUser._id, isTyping });
+    }
   },
 
   editMessage: async (messageId, newText) => {
